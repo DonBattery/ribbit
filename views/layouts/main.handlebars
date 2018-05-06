@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
     <title>ribbit</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="img/favicon.ico?v=2" />
-    <script src="scripts/jquery-3.3.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script/jquery-3.3.1.min.js"></script>
   </head>
   <body>
-    <header><img src="/img/logo.png" alt="ribbit logo"></header>
-    {{{body}}}
-  </body>
+    <div id="mainWrapper">
+      <header>
+        <img src="/img/logo.png" alt="ribbit logo">
+        <div class="verticalBox">
+          <div class="headerText ribbitText">ribbit</div>
+          <div class="headerText quoteText">the simple socket.io chat</div>
+        </div>
+      </header>
+      {{{body}}}
+    </div>
+  </body>  
 </html>

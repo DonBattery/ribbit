@@ -1,15 +1,19 @@
 'use strict';
 
-const path = require('path');
 const express = require('express');
 const app = express();
-const PORT = (process.argv[2] || 8080);
-const serverName = (process.argv[3] || 'ribbit');
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+const path = require('path');
 const logger = require('endpointz').reqLog;
 const serverLog = require('endpointz').serverLog;
 const startMessage = require('endpointz').startMessage;
 const handlebars = require('express3-handlebars').create({ defaultLayout: 'main' });
 const favicon = require('serve-favicon');
+
+const PORT = (process.argv[2] || 8080);
+const serverName = (process.argv[3] || 'ribbit');
 
 app.use(logger);
 
@@ -24,15 +28,13 @@ app.set('view engine', 'handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res) {
+
   res.render('home');
 });
 
 app.get('/about', function(req, res) {
-  res.render('about');
-});
 
-app.get('/login', function(req, res) {
-  res.render('login');
+  res.render('about');
 });
 
 app.get('/chat', function(req, res) {
@@ -50,4 +52,11 @@ app.use(function(err, req, res, next){
   res.status(500).render('500');
 });
 
-app.listen(PORT, startMessage(serverName, PORT));
+io.on('connection', function(socket){
+  serverLog('User connected with the ID : ' + socket.id);
+  socket.on('login', nickName => {
+    serverLog('With the nickname : ' + nickName);
+  });
+});
+
+http.listen(PORT, startMessage(serverName, PORT));

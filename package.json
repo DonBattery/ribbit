@@ -15,7 +15,8 @@
     "express3-handlebars": "^0.5.2",
     "handlebars": "^4.0.11",
     "huli-hb": "^1.0.0",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.1.0"
   },
   "repository": {
     "type": "git",
