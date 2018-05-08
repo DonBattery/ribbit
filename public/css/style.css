@@ -50,6 +50,12 @@ header, .headerText {
   display: none;
 }
 
+#avatarSelector {
+  display: flex;
+  flex-wrap: wrap;
+  width: 320px;
+}
+
 form input { 
   border: 0px ;
   padding: 10px; 
