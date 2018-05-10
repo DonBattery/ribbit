@@ -1,73 +1,72 @@
-html {
-  height: 99%;
+* {
+  box-sizing: border-box;
 }
 
-body {
+html body {
   padding: 0;
-  border: 0;
   margin: 0;
   box-sizing: border-box;
   background-color:rgb(49, 88, 117);
   color: rgb(159, 219, 154);
-  min-height: 95%;
   font-family: "Courier New", "Courier", "monospace";
   font-size: 1.2rem;
   white-space: nowrap;
+  height: 100%;
 }
 
 #mainWrapper {
   width: fit-content;
+  height: 100%;
   margin: 0 auto;
 } 
 
-header, .headerText {
+#nickName {
+  width: 75%;
+}
+
+.mainHeader {
   display: block;
 }
 
-.verticalBox {
-  display: inline-block;
-  top: 30px;
-  padding-left: 10px;
-}
+  .verticalBox {
+    display: inline-block;
+    top: 30px;
+    padding-left: 10px;
+  }
 
-.ribbitText {
-  font-size: 3rem;
-  font-weight: bolder;
-  color: rgb(181, 248, 93);
-}
+  .ribbitText {
+    font-size: 3rem;
+    font-weight: bolder;
+    color: rgb(181, 248, 93);
+  }
 
-.quoteText {
-  font-size: 1rem;
-  padding-left: 5px;
-  color: azure;
-}
+  .quoteText {
+    font-size: 1rem;
+    padding-left: 5px;
+    color: azure;
+  }
 
 #avatarWrapper {
   display: none;
 }
 
-#chatWrapper {
-  display: none;
-}
+  #avatarSelector {
+    display: flex;
+    flex-wrap: wrap;
+    width: 320px;
+  }
 
-#avatarSelector {
-  display: flex;
-  flex-wrap: wrap;
-  width: 320px;
-}
-
-form input { 
+.formInput {
   border: 0px ;
   padding: 10px; 
-  width: 33%; 
-  margin-right: 5px;
+  min-width: 50px;
   background-color: rgb(14, 167, 194);
   color: rgb(204, 248, 233);
   font-size: 2rem;
   border-radius: 5px;
 }
 
-form button {
+.formButton {
   background: rgb(130, 224, 255);
   color: rgb(4, 85, 58);
   border: none;

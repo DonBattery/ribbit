@@ -46,12 +46,50 @@ app.use(function(err, req, res, next){
 
 // Socket.IO 
 io.on('connection', function(socket){
+  
+  socket.chatUser = {
+    nickname: '',
+    avatar: '',
+    inchat: false
+  }
+
   serverLog('User connected with the ID : ' + socket.id);
-  socket.emit('accept', 'sajt');
-  socket.on('login', nickName => {
-    serverLog('With the nickname : ' + nickName);
+
+  socket.emit('accept', 'Socket.IO Connected');
+
+  socket.on('nickname', nickName => {
+    socket.chatUser.nickname = nickName;
   });
+
+  socket.on('avatar', avatarImg => {
+    socket.chatUser.avatar = avatarImg;
+    socket.chatUser.inchat = true;
+  });
+
+  socket.on('connectedUsers', () => {
+    socket.emit('connectedUsers', getUsers());
+  });
+
+  socket.on('chatMessage', (msgObj) => {
+    io.sockets.emit('chatMessage', msgObj);
+  });
+
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('connectedUsers', getUsers());
+    serverLog(socket.chatUser.nickname + ' disconnected.');
+    socket.chatUser = undefined;
+  });
+
 });
+
+function getUsers(){
+  const users = [];
+  Object.keys(io.sockets.connected).forEach(function(socketID){
+      const chatUser = io.sockets.connected[socketID].chatUser;
+      if(chatUser && chatUser.inchat) users.push(chatUser);
+  });
+  return users;
+}
 
 // Start main loop
 http.listen(PORT, startMessage(serverName, PORT));
