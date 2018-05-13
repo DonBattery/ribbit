@@ -80,8 +80,10 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('connectedUsers', getUsers());
-    socket.broadcast.emit('userLeft', socket.chatUser.nickname);
-    serverLog(socket.chatUser.nickname + ' disconnected.');
+    if (socket.chatUser.inchat) {
+      socket.broadcast.emit('userLeft', socket.chatUser.nickname);
+      serverLog(socket.chatUser.nickname + ' disconnected.');
+    }
     socket.chatUser = undefined;
   });
 
