@@ -2,6 +2,8 @@
 
 const socket = io();
 
+
+
 function selectAvatar(avatarImg) {
   socket.chatUser.avatar = avatarImg;
   socket.chatUser.inchat = true;
@@ -10,6 +12,7 @@ function selectAvatar(avatarImg) {
   $('#topHeader').hide();
   $('#chatWrapper').show();
   socket.emit('connectedUsers', '');  
+  socket.emit('newUser', socket.chatUser.nickname);
 }
 
 function loadAvatars() {
@@ -27,6 +30,23 @@ function loadAvatars() {
   });
 }
 
+function newMessage(msgObj) {
+  const chatMessages = $('#chatMessages');
+  const chatBox = $('#chatBox');
+  let listItem = $('<li></li>');
+  let infoAvatar = $('<img />', {
+    src: msgObj.avatar,
+    class: "infoAvatar"
+  });
+  let infoNickname = $(`<div class="infoNickname">${msgObj.nickname}:</div>`);
+  let message = $(`<div class="chatMessage">${msgObj.message}</div>`);
+  infoAvatar.appendTo(listItem);
+  infoNickname.appendTo(listItem);
+  message.appendTo(listItem);
+  listItem.appendTo(chatMessages);
+  chatBox.scrollTop(chatBox.prop("scrollHeight"));
+}
+
 $(function () {
 
   socket.chatUser = {
@@ -38,16 +58,6 @@ $(function () {
   // Socket.IO and Test
   socket.on('accept', (msg) => {
     console.log(msg);
-  });
-  
-  // Main welcome / nickname page
-  $('#nicknameForm').submit(function(){
-    socket.chatUser.nickname = $('#nickName').val();
-    socket.emit('nickname', $('#nickName').val());
-    $('#nickNameWrapper').hide();
-    $('#avatarWrapper').show();
-    loadAvatars();   
-    return false;
   });
   
   socket.on('connectedUsers', users => {
@@ -65,6 +75,38 @@ $(function () {
       userInfo.appendTo(chatUsers);
     });
   });
+  
+  socket.on('chatMessage', msgObj => {
+    msgObj.avatar = 'img/avatar/' + msgObj.avatar;
+    newMessage(msgObj);
+  });
+  
+  socket.on('newUser', nickname => {
+    const msgObj = {
+      nickname: 'ribbit-Bot',
+      avatar: 'img/bot.png',
+      message: `${nickname} has connected ribbit`
+    }
+    newMessage(msgObj);
+  });
+
+  socket.on('userLeft', nickname => {
+    const msgObj = {
+      nickname: 'ribbit-Bot',
+      avatar: 'img/bot.png',
+      message: `${nickname} has left ribbit`
+    }
+    newMessage(msgObj);
+  });
+
+  $('#nicknameForm').submit(function(){
+    socket.chatUser.nickname = $('#nickName').val();
+    socket.emit('nickname', $('#nickName').val());
+    $('#nickNameWrapper').hide();
+    $('#avatarWrapper').show();
+    loadAvatars();   
+    return false;
+  });
 
   $('#messageForm').submit(() => {
     socket.emit('chatMessage', {
@@ -74,23 +116,6 @@ $(function () {
     });
     $('#messageBox').val('');
     return false;
-  });
-
-  socket.on('chatMessage', msgObj => {
-    const chatMessages = $('#chatMessages');
-    const chatBox = $('#chatBox');
-    let listItem = $('<li></li>');
-    let infoAvatar = $('<img />', {
-      src: 'img/avatar/' + msgObj.avatar,
-      class: "infoAvatar"
-    });
-    let infoNickname = $(`<div class="infoNickname">${msgObj.nickname}:</div>`);
-    let message = $(`<div class="chatMessage">${msgObj.message}</div>`);
-    infoAvatar.appendTo(listItem);
-    infoNickname.appendTo(listItem);
-    message.appendTo(listItem);
-    listItem.appendTo(chatMessages);
-    chatBox.scrollTop(chatBox.prop("scrollHeight"));
   });
 
 });

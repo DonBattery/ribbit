@@ -67,7 +67,11 @@ io.on('connection', function(socket){
   });
 
   socket.on('connectedUsers', () => {
-    socket.emit('connectedUsers', getUsers());
+    io.sockets.emit('connectedUsers', getUsers());
+  });
+
+  socket.on('newUser', nickname => {
+    socket.broadcast.emit('newUser', nickname);
   });
 
   socket.on('chatMessage', (msgObj) => {
@@ -76,6 +80,7 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('connectedUsers', getUsers());
+    socket.broadcast.emit('userLeft', socket.chatUser.nickname);
     serverLog(socket.chatUser.nickname + ' disconnected.');
     socket.chatUser = undefined;
   });
