@@ -29,15 +29,15 @@ const tagsToReplace = {
 };
 
 // list of connected users
-const users = [];
+let users = [];
 
-function getUsers(){
-  const users = [];
+function getConnectedUsers(){
+  const connectedUsers = [];
   Object.keys(io.sockets.connected).forEach(function(socketID){
       const chatUser = io.sockets.connected[socketID].chatUser;
-      if(chatUser && chatUser.inchat) users.push(chatUser);
+      if(chatUser && chatUser.inchat) connectedUsers.push(chatUser);
   });
-  return users;
+  return connectedUsers;
 }
 
 function isNickTaken(nickname) {
@@ -48,6 +48,12 @@ function isNickTaken(nickname) {
     }
   });
   return taken;
+}
+
+function removeUser(id) {
+  users = users.filter( user => {
+    return user.id !== id;
+  });  
 }
 
 function replaceTag(tag) {
@@ -107,28 +113,28 @@ io.on('connection', function(socket){
     socket.chatUser.avatar = avatarImg;
     socket.chatUser.inchat = true;
     users.push(socket.chatUser);
-    console.log(users);
   });
-
+  
   socket.on('connectedUsers', () => {
-    io.sockets.emit('connectedUsers', getUsers());
+    io.sockets.emit('connectedUsers', getConnectedUsers());
   });
-
+  
   socket.on('newUser', nickname => {
     socket.broadcast.emit('newUser', nickname);
   });
-
+  
   socket.on('chatMessage', (msgObj) => {
     msgObj.message = safeString(msgObj.message);
     io.sockets.emit('chatMessage', msgObj);
   });
-
+  
   socket.on('disconnect', () => {
-    socket.broadcast.emit('connectedUsers', getUsers());
+    socket.broadcast.emit('connectedUsers', getConnectedUsers());
     if (socket.chatUser.inchat) {
       socket.broadcast.emit('userLeft', socket.chatUser.nickname);
       serverLog(socket.chatUser.nickname + ' disconnected.');
     }
+    removeUser(socket.id);
     socket.chatUser = undefined;
   });
   
