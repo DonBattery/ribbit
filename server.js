@@ -47,6 +47,9 @@ function isNickTaken(nickname) {
       taken = true;
     }
   });
+  if (nickname === 'ribbit-Bot') {
+    taken = true;
+  }
   return taken;
 }
 
