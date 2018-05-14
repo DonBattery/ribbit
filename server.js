@@ -28,6 +28,36 @@ const tagsToReplace = {
   '>': '&gt;'
 };
 
+// list of connected users
+const users = [];
+
+function getUsers(){
+  const users = [];
+  Object.keys(io.sockets.connected).forEach(function(socketID){
+      const chatUser = io.sockets.connected[socketID].chatUser;
+      if(chatUser && chatUser.inchat) users.push(chatUser);
+  });
+  return users;
+}
+
+function isNickTaken(nickname) {
+  let taken = false;
+  users.forEach(user => {
+    if (user.nickname === nickname) {
+      taken = true;
+    }
+  });
+  return taken;
+}
+
+function replaceTag(tag) {
+  return tagsToReplace[tag] || tag;
+}
+
+function safeString(str) {
+  return str.replace(/[&<>]/g, replaceTag);
+}
+
 app.use(logger);
 
 app.use(express.json());
@@ -38,6 +68,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/avatars', (req, res) => {
   res.json(avatars);
+});
+
+app.get('/checknick/:newnick', (req, res) => {
+  res.send((isNickTaken(req.params.newnick)) ? 'taken' : 'free');
 });
 
 // 404 catch-all handler (middleware)
@@ -55,6 +89,7 @@ app.use(function(err, req, res, next){
 io.on('connection', function(socket){
   
   socket.chatUser = {
+    id: socket.id,
     nickname: '',
     avatar: '',
     inchat: false
@@ -71,6 +106,8 @@ io.on('connection', function(socket){
   socket.on('avatar', avatarImg => {
     socket.chatUser.avatar = avatarImg;
     socket.chatUser.inchat = true;
+    users.push(socket.chatUser);
+    console.log(users);
   });
 
   socket.on('connectedUsers', () => {
@@ -94,25 +131,8 @@ io.on('connection', function(socket){
     }
     socket.chatUser = undefined;
   });
-
+  
 });
-
-function getUsers(){
-  const users = [];
-  Object.keys(io.sockets.connected).forEach(function(socketID){
-      const chatUser = io.sockets.connected[socketID].chatUser;
-      if(chatUser && chatUser.inchat) users.push(chatUser);
-  });
-  return users;
-}
-
-function replaceTag(tag) {
-  return tagsToReplace[tag] || tag;
-}
-
-function safeString(str) {
-  return str.replace(/[&<>]/g, replaceTag);
-}
 
 // Start main loop
 http.listen(PORT, startMessage(serverName, PORT));

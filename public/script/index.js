@@ -2,8 +2,6 @@
 
 const socket = io();
 
-
-
 function selectAvatar(avatarImg) {
   socket.chatUser.avatar = avatarImg;
   socket.chatUser.inchat = true;
@@ -72,6 +70,9 @@ $(function () {
       let infoNickname = $(`<div class="infoNickname">${user.nickname}</div>`);
       infoAvatar.appendTo(userInfo);
       infoNickname.appendTo(userInfo);
+      if (user.nickname === socket.chatUser.nickname) {
+        userInfo.css("background-color", "#339966");
+      }
       userInfo.appendTo(chatUsers);
     });
   });
@@ -100,11 +101,19 @@ $(function () {
   });
 
   $('#nicknameForm').submit(function(){
-    socket.chatUser.nickname = $('#nickName').val();
-    socket.emit('nickname', $('#nickName').val());
-    $('#nickNameWrapper').hide();
-    $('#avatarWrapper').show();
-    loadAvatars();   
+    const newNickname = $('#nickName').val();
+    $.get(`/checknick/${encodeURI(newNickname)}`, res => {
+      if (res === 'free') {
+        socket.chatUser.nickname = newNickname;    
+        socket.emit('nickname', newNickname);
+        $('#nickNameWrapper').hide();
+        $('#avatarWrapper').show();
+        loadAvatars();
+      } else {
+        $('#wrongNickname').show();
+      }
+    });
+    $('#nickName').val('');
     return false;
   });
 

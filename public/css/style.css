@@ -24,6 +24,12 @@ html body {
   width: 75%;
 }
 
+#wrongNickname {
+  padding-top: 0.3rem;
+  color: rgb(216, 113, 113);
+  display: none;
+}
+
 .mainHeader {
   display: block;
 }
