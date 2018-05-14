@@ -21,6 +21,13 @@ const favicon = require('serve-favicon');
 const fs = require('fs');
 const avatars = fs.readdirSync('./public/img/avatar/');
 
+// These HTML characters needs to be escaped
+const tagsToReplace = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
 app.use(logger);
 
 app.use(express.json());
@@ -75,6 +82,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('chatMessage', (msgObj) => {
+    msgObj.message = safeString(msgObj.message);
     io.sockets.emit('chatMessage', msgObj);
   });
 
@@ -96,6 +104,14 @@ function getUsers(){
       if(chatUser && chatUser.inchat) users.push(chatUser);
   });
   return users;
+}
+
+function replaceTag(tag) {
+  return tagsToReplace[tag] || tag;
+}
+
+function safeString(str) {
+  return str.replace(/[&<>]/g, replaceTag);
 }
 
 // Start main loop
