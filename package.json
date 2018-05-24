@@ -10,12 +10,12 @@
   "author": "DonBattery",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.4",
     "endpointz": "^1.0.2",
     "express": "^4.16.3",
     "huli-hb": "^1.0.0",
     "serve-favicon": "^2.5.0",
-    "socket.io": "^2.1.0"
+    "socket.io": "^2.1.0",
+    "sqlite3": "^4.0.0"
   },
   "repository": {
     "type": "git",

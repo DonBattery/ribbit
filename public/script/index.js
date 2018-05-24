@@ -10,7 +10,7 @@ function selectAvatar(avatarImg) {
   $('#topHeader').hide();
   $('#chatWrapper').show();
   socket.emit('connectedUsers', '');  
-  socket.emit('newUser', socket.chatUser.nickname);
+  socket.emit('newUser', '');
 }
 
 function loadAvatars() {
@@ -21,7 +21,7 @@ function loadAvatars() {
         src: 'img/avatar/' + element
       });
       img.on('click', () => {
-        selectAvatar(element);
+        selectAvatar('img/avatar/' + element);
       });
       img.appendTo($('#avatarSelector'));
     });
@@ -46,25 +46,26 @@ function newMessage(msgObj) {
 }
 
 $(function () {
-
+  
   socket.chatUser = {
     nickname: '',
     avatar: '',
     inchat: false
   }  
 
-  // Socket.IO and Test
-  socket.on('accept', (msg) => {
-    console.log(msg);
+  socket.on('prevMsgs', msgs => {
+    msgs.forEach(msg => {
+      newMessage(msg);
+    });
   });
-  
+
   socket.on('connectedUsers', users => {
     const chatUsers = $('#chatUsers');
     chatUsers.html('');
     users.forEach(user => {
       let userInfo = $('<div class="userInfo"></div>');
       let infoAvatar = $('<img />', {
-        src: 'img/avatar/' + user.avatar,
+        src: user.avatar,
         class: "infoAvatar"
       });
       let infoNickname = $(`<div class="infoNickname">${user.nickname}</div>`);
@@ -78,7 +79,6 @@ $(function () {
   });
   
   socket.on('chatMessage', msgObj => {
-    msgObj.avatar = 'img/avatar/' + msgObj.avatar;
     newMessage(msgObj);
   });
   
@@ -90,7 +90,7 @@ $(function () {
     }
     newMessage(msgObj);
   });
-
+  
   socket.on('userLeft', nickname => {
     const msgObj = {
       nickname: 'ribbit-Bot',
@@ -99,20 +99,20 @@ $(function () {
     }
     newMessage(msgObj);
   });
+  
+  socket.on('trynick', msg => {
+    if (msg.available) {
+      socket.chatUser.nickname = msg.nickname
+      $('#nickNameWrapper').hide();
+      $('#avatarWrapper').show();      
+      loadAvatars();
+    } else {
+      $('#wrongNickname').show();
+    }
+  });
 
   $('#nicknameForm').submit(function(){
-    const newNickname = $('#nickName').val();
-    $.get(`/checknick/${encodeURI(newNickname)}`, res => {
-      if (res === 'free') {
-        socket.chatUser.nickname = newNickname;    
-        socket.emit('nickname', newNickname);
-        $('#nickNameWrapper').hide();
-        $('#avatarWrapper').show();
-        loadAvatars();
-      } else {
-        $('#wrongNickname').show();
-      }
-    });
+    socket.emit('trynick', $('#nickName').val());
     $('#nickName').val('');
     return false;
   });
@@ -126,5 +126,5 @@ $(function () {
     $('#messageBox').val('');
     return false;
   });
-
+  
 });
