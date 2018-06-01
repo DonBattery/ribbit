@@ -13,7 +13,7 @@
   <body>
     <div id="mainWrapper">
       <div id="topHeader">
-        <img src="/img/logo.png" alt="ribbit logo">
+        <img src="img/logo.png" alt="ribbit logo">
         <div class="verticalBox">
           <div class="headerText ribbitText">ribbit</div>
           <div class="headerText quoteText">the simple socket.io chat</div>
@@ -25,7 +25,8 @@
         <form id="nicknameForm" action="">
           <input id="nickName" autocomplete="off" class="formInput"/><button class="formButton">OK</button>
         </form>
-        <div id="wrongNickname">nickname taken, please choose another</div>
+        <div class="inputError" id="takenNickname">nickname taken, please choose another</div>
+        <div class="inputError" id="longNickname">nickname too long, please choose another</div>
       </div>
       <div id="avatarWrapper">
         <h3>choose your avatar</h3>

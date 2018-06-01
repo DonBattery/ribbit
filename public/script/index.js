@@ -101,13 +101,16 @@ $(function () {
   });
   
   socket.on('trynick', msg => {
+    $('.inputError').hide();
     if (msg.available) {
       socket.chatUser.nickname = msg.nickname
       $('#nickNameWrapper').hide();
       $('#avatarWrapper').show();      
       loadAvatars();
-    } else {
-      $('#wrongNickname').show();
+    } else if (msg.taken) {
+      $('#takenNickname').show();
+    } else if (msg.long) {
+      $('#longNickname').show();
     }
   });
 

@@ -20,7 +20,7 @@ function replaceTag(tag) {
 }
 
 function safeString(str) {
-  return str.replace(/[&<>]/g, replaceTag);
+  return str.replace(/[&<>]/g, replaceTag).substring(0,255);
 }
 
 function handler(io) {
@@ -48,6 +48,10 @@ function handler(io) {
     }
     return taken;
   }
+
+  function nickLong(nickname) {
+    return (nickname.length > 18);
+  }
   
   io.on('connection', (socket) =>{ 
     
@@ -66,10 +70,18 @@ function handler(io) {
     socket.on('trynick', nickName => {
       nickName = safeString(nickName);
       if (nickTaken(nickName)) {
-        socket.emit('trynick', {available: false});
+        socket.emit('trynick', {
+          available: false, taken: true
+        });
+      } else if (nickLong(nickName)) {
+        socket.emit('trynick', {
+          available: false, long: true
+        });
       } else {
         socket.chatUser.nickname = nickName;
-        socket.emit('trynick', {available: true, nickname: nickName});
+        socket.emit('trynick', {
+          available: true, nickname: nickName
+        });
       }
     });
     

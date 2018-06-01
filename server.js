@@ -6,6 +6,7 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const ioHandler = require('./ioHandler').handler(io);
+const ribbitRouter = express.Router();
 
 const PORT = (process.argv[2] || process.env.PORT || 8080);
 const serverName = (process.argv[3] || 'ribbit');
@@ -30,7 +31,7 @@ app.use(express.json());
 
 app.use(favicon(path.join(__dirname,'public','img','favicon.ico')));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/ribbit', express.static(path.join(__dirname, 'public')));
 
 app.get('/avatars', (req, res) => {
   res.json(avatars);
@@ -46,5 +47,7 @@ app.use(function(err, req, res, next){
   serverLog(err.stack);
   res.status(500).send('500');
 });
+
+// app.use('/ribbit', ribbitRouter);
 
 http.listen(PORT, startMessage(serverName, PORT));

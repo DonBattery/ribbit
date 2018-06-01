@@ -24,7 +24,7 @@ html body {
   width: 75%;
 }
 
-#wrongNickname {
+.inputError {
   padding-top: 0.3rem;
   color: rgb(216, 113, 113);
   display: none;
